@@ -1,0 +1,9 @@
+:root {
+  --background-color: rgb(33, 33, 33);
+}
+
+body {
+  background-color: var(--background-color);
+  margin: 0;
+  user-select: none;
+}
