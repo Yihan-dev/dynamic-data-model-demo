@@ -6,8 +6,8 @@ const [X, Y] = [0, 1];
 
 
 export class Screen extends MouseReceiver {
-  screenVector = [0,0];
-  screenScale = 1;
+  #vector = [0,0];
+  #scale = 1;
   nodeRoot = document.createElement('div');
 
 
@@ -26,19 +26,27 @@ export class Screen extends MouseReceiver {
 
 
   /** @param {Number[]} vector */
-  setScreenVector(vector) {
-    this.screenVector = vector;
+  set vector(vector) {
+    this.#vector = vector;
     this.#setTransform();
+  }
+
+  get vector() {
+    return this.#vector;
   }
 
   /** @param {Number} scale */
-  setScreenScale(scale) {
-    this.screenScale = scale;
-    this.#setTransform();
+  set scale(scale) {
+    this.#scale = scale;
+    // this.#setTransform();
+  }
+
+  get scale() {
+    return this.#scale;
   }
 
   #setTransform() {
-    this.nodeRoot.style.transform = `translate(${this.screenVector[X]}px, ${this.screenVector[Y]}px) scale(${this.screenScale})`;
+    this.nodeRoot.style.transform = `translate(${this.#vector[X]}px, ${this.#vector[Y]}px) scale(${this.#scale})`;
   }
 
 }
@@ -47,19 +55,19 @@ export class Screen extends MouseReceiver {
 
 /** @param {Screen} screen */
 function HandlingWheel(screen) {
-  const MUL_WHEEL = 0.001, MIN = 0.2, MAX = 1.5;
+  const MUL_WHEEL = 0.002, MIN = 0.2, MAX = 1.5;
   screen.background.addEventListener('wheel', wheel);
 
 
   /** @param {WheelEvent} e */
   function wheel(e) {
-    const referenceGridCoefficient = screen.screenScale;
-    screen.setScreenScale(limitedToRange(screen.screenScale-e.deltaY*MUL_WHEEL, MIN, MAX));
+    const referenceScale = screen.scale;
+    screen.scale = limitedToRange(screen.scale-e.deltaY*MUL_WHEEL, MIN, MAX);
 
-    screen.setScreenVector(Vector2.add(
-      Vector2.scalarMul([e.clientX, e.clientY], 1-screen.screenScale/referenceGridCoefficient),
-      Vector2.scalarMul(screen.screenVector, screen.screenScale/referenceGridCoefficient)
-    ));
+    screen.vector = Vector2.add(
+      Vector2.scalarMul([e.clientX, e.clientY], 1-screen.scale/referenceScale),
+      Vector2.scalarMul(screen.vector, screen.scale/referenceScale)
+    );
   }
 
 }
@@ -74,14 +82,14 @@ function HandlingMouse(screen) {
   /** @param {MouseEvent} e */
   function mousedown(e) {
     if (e.button == 1) {
-      screen.mouseMoveUp(1, MouseWheelMove(Vector2.difference(screen.screenVector, [e.clientX, e.clientY])));
+      screen.mouseMoveUp(1, MouseWheelMove(Vector2.difference(screen.vector, [e.clientX, e.clientY])));
     }
   }
 
   /** @param {number[]} reference */
   function MouseWheelMove(reference) {
     /** @param {MouseEvent} e */
-    return e => screen.setScreenVector(Vector2.difference(reference, [e.clientX, e.clientY]));
+    return e => screen.vector = Vector2.difference(reference, [e.clientX, e.clientY]);
   }
 
 }
