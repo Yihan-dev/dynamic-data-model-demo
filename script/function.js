@@ -1,6 +1,7 @@
 // @ts-check
 
 /**
+ * @typedef {import('./structure.js').UnitData} UnitData
  * @typedef {import('./structure.js').Function} FunctionNode
  * @typedef {import('./structure.js').Assignment} AssignmentNode
  */
@@ -9,21 +10,22 @@
  * @param {FunctionNode} functionNode
  * @param {Number[]} 상수
  * @param {Number[]} 환경변수
- * @param {Number[]} 주체상태
- * @param {Number[]} 주체편제
- * @param {Number[]} 주체지형
  * @param {Number[]} 관계
- * @param {Number[]} 대상상태
- * @param {Number[]} 대상편제
- * @param {Number[]} 대상지형
+ * @param {UnitData} subject
+ * @param {UnitData} object
  */
-export function calcFunctionNode(functionNode, 상수, 환경변수, 주체상태, 주체편제, 주체지형, 관계, 대상상태, 대상편제, 대상지형) {
+export function calcFunctionNode(functionNode, 상수, 환경변수, 관계, subject, object) {
   const 함수변수 = new Array(functionNode.varLength).fill(0);
-  const 주체상태Copy = [...주체상태];
-  const 대상상태Copy = [...대상상태];
-  parameter = [상수, 환경변수, 함수변수, 주체상태Copy, 주체편제, 주체지형, 관계, 대상상태Copy, 대상편제, 대상지형];
+  const subjectStateCopy = [...subject.state];
+  const objectStateCopy = [...object.state];
 
-  const state = [함수변수, 주체상태Copy, 대상상태Copy];
+  parameter = [
+    상수, 환경변수, 함수변수, 관계,
+    subjectStateCopy, subject.organization, subject.terrain,
+    objectStateCopy, object.organization, object.terrain
+  ];
+
+  const state = [함수변수, subjectStateCopy, objectStateCopy];
 
   for (const node of functionNode.assignmentNodeList) {
     const operator = assignmentOperatorMap.get(node.operator);
@@ -32,7 +34,7 @@ export function calcFunctionNode(functionNode, 상수, 환경변수, 주체상�
     }
   }
 
-  return [주체상태Copy, 대상상태Copy];
+  return [subjectStateCopy, objectStateCopy];
 }
 
 /** @type {Number[][]} */
@@ -61,7 +63,7 @@ const assignmentOperatorMap = new Map([
  * @param {NumberNode} node
  * @returns {Number}
  */
-function getNumberByNode(node) { // 나중에는 context를 인수로 받아서 변수읽기 등의 기능도 할 수 있도록 하기?
+function getNumberByNode(node) {
   if (isValNode(node)) {
     return parameter[node.objectKey][node.varKey];
   }

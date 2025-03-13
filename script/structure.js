@@ -1,24 +1,43 @@
 // @ts-check
 
-export class Function {
+export class UnitData {
   /**
-   * @param {Assignment[]} assignmentNodeList
-   * @param {Number} varLength
+   * @param {Number[]} state
+   * @param {Number[]} organization
+   * @param {Number[]} terrain
    */
   constructor(
-    assignmentNodeList,
-    varLength,
+    state,
+    organization,
+    terrain,
   ) {
-    this.assignmentNodeList = assignmentNodeList;
+    this.state = state;
+    this.organization = organization;
+    this.terrain = terrain;
+  }
+}
+
+
+
+export class Function {
+  /**
+   * @param {Number} varLength
+   * @param {Assignment[]} assignmentNodeList
+   */
+  constructor(
+    varLength,
+    assignmentNodeList,
+  ) {
     this.varLength = varLength;
+    this.assignmentNodeList = assignmentNodeList;
   }
 }
 
 export class Assignment {
   /**
    * @param {String} operator
-  *  @param {Number} objectKey
-  *  @param {Number} varKey
+   * @param {Number} objectKey
+   * @param {Number} varKey
    * @param {NumberNode} numberNode
    */
   constructor(
@@ -42,8 +61,8 @@ export class Val {
   type = 'val';
 
   /**
-  *  @param {Number} objectKey
-  *  @param {Number} varKey
+   * @param {Number} objectKey
+   * @param {Number} varKey
    */
   constructor(
     objectKey,
