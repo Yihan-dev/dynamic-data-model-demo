@@ -2,11 +2,11 @@
 const [X, Y] = [0, 1];
 
 /**
- * @param {Number[][]} vector2Arr
+ * @param {Number[][]} vector2List
  */
-export function sum(vector2Arr) {
+export function sum(vector2List) {
   let sum = [0, 0];
-  for (const vector of vector2Arr) {
+  for (const vector of vector2List) {
     sum[X] += vector[X];
     sum[Y] += vector[Y];
   }

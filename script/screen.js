@@ -7,7 +7,7 @@ const [X, Y] = [0, 1];
 
 export class Screen extends MouseReceiver {
   #vector = [0,0];
-  #scale = 1;
+  scale = 1;
   nodeRoot = document.createElement('div');
 
 
@@ -25,9 +25,17 @@ export class Screen extends MouseReceiver {
   }
 
 
-  /** @param {Number[]} vector */
-  set vector(vector) {
-    this.#vector = vector;
+  /**
+   * @param {Number[]} vector
+   * @param {Number[]} mouseVector
+   * @param {Number} scaleRatio
+   */
+  setVector(vector, mouseVector, scaleRatio) {
+    this.#vector = Vector2.add(
+      Vector2.scalarMul(mouseVector, 1-scaleRatio),
+      Vector2.scalarMul(vector, scaleRatio)
+    );
+
     this.#setTransform();
   }
 
@@ -35,18 +43,11 @@ export class Screen extends MouseReceiver {
     return this.#vector;
   }
 
-  /** @param {Number} scale */
-  set scale(scale) {
-    this.#scale = scale;
-    // this.#setTransform();
-  }
-
-  get scale() {
-    return this.#scale;
-  }
-
   #setTransform() {
-    this.nodeRoot.style.transform = `translate(${this.#vector[X]}px, ${this.#vector[Y]}px) scale(${this.#scale})`;
+    this.nodeRoot.style.transform = `
+      translate(${this.#vector[X]}px, ${this.#vector[Y]}px)
+      scale(${this.scale})
+    `;
   }
 
 }
@@ -64,9 +65,10 @@ function HandlingWheel(screen) {
     const referenceScale = screen.scale;
     screen.scale = limitedToRange(screen.scale-e.deltaY*MUL_WHEEL, MIN, MAX);
 
-    screen.vector = Vector2.add(
-      Vector2.scalarMul([e.clientX, e.clientY], 1-screen.scale/referenceScale),
-      Vector2.scalarMul(screen.vector, screen.scale/referenceScale)
+    screen.setVector(
+      screen.vector,
+      [e.clientX, e.clientY],
+      screen.scale / referenceScale
     );
   }
 
@@ -82,14 +84,21 @@ function HandlingMouse(screen) {
   /** @param {MouseEvent} e */
   function mousedown(e) {
     if (e.button == 1) {
-      screen.mouseMoveUp(1, MouseWheelMove(Vector2.difference(screen.vector, [e.clientX, e.clientY])));
+      screen.mouseMoveUp(1, MouseWheelMove(Vector2.difference(screen.vector, [e.clientX, e.clientY]), screen.scale));
     }
   }
 
-  /** @param {number[]} reference */
-  function MouseWheelMove(reference) {
+  /**
+   * @param {number[]} referenceVector
+   * @param {number} referenceScale
+   */
+  function MouseWheelMove(referenceVector, referenceScale) {
     /** @param {MouseEvent} e */
-    return e => screen.vector = Vector2.difference(reference, [e.clientX, e.clientY]);
+    return e => screen.setVector(
+      Vector2.difference(referenceVector, [e.clientX, e.clientY]),
+      [e.clientX, e.clientY],
+      screen.scale / referenceScale
+    );
   }
 
 }
