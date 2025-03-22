@@ -55,7 +55,7 @@ export class Assignment {
 
 
 
-/** @typedef {Val | Calc | Func | Conditional} NumberNode */
+/** @typedef {Val | Calc | Func | Switch} NumberNode */
 
 export class Val {
   type = 'val';
@@ -105,22 +105,35 @@ export class Func {
   }
 }
 
-export class Conditional {
-  type = 'conditional';
+export class Switch {
+  type = 'switch';
 
   /**
+   * @param {Case[]} caseNodeList
+   * @param {NumberNode} defaultNode
+   */
+  constructor(
+    caseNodeList,
+    defaultNode,
+  ) {
+    this.caseNodeList = caseNodeList;
+    this.defaultNode = defaultNode;
+  }
+}
+
+
+
+export class Case {
+  /**
    * @param {BooleanNode} condition
-   * @param {NumberNode} childNodeTrue
-   * @param {NumberNode} childNodeFalse
+   * @param {NumberNode} childNode
    */
   constructor(
     condition,
-    childNodeTrue,
-    childNodeFalse,
+    childNode,
   ) {
     this.condition = condition;
-    this.childNodeTrue = childNodeTrue;
-    this.childNodeFalse = childNodeFalse;
+    this.childNode = childNode;
   }
 }
 

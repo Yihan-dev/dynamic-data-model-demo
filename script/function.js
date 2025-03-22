@@ -20,12 +20,13 @@ export function calcFunctionNode(functionNode, 상수, 환경변수, 관계, sub
   const objectStateCopy = [...object.state];
 
   parameter = [
-    상수, 환경변수, 함수변수, 관계,
+    상수, 환경변수, 관계,
     subjectStateCopy, subject.organization, subject.terrain,
-    objectStateCopy, object.organization, object.terrain
+    objectStateCopy, object.organization, object.terrain,
+    함수변수
   ];
 
-  const state = [함수변수, subjectStateCopy, objectStateCopy];
+  const state = [subjectStateCopy, objectStateCopy, 함수변수];
 
   for (const node of functionNode.assignmentNodeList) {
     const operator = assignmentOperatorMap.get(node.operator);
@@ -56,7 +57,7 @@ const assignmentOperatorMap = new Map([
  * @typedef {import('./structure.js').Val} ValNode
  * @typedef {import('./structure.js').Calc} CalcNode
  * @typedef {import('./structure.js').Func} FuncNode
- * @typedef {import('./structure.js').Conditional} ConditionalNode
+ * @typedef {import('./structure.js').Switch} SwitchNode
  */
 
 /**
@@ -82,9 +83,9 @@ function getNumberByNode(node) {
     }
   }
 
-  if (isConditionalNode(node)) {
+  if (isSwitchNode(node)) {
     return getNumberByNode(
-      getBooleanByNode(node.condition)? node.childNodeTrue : node.childNodeFalse
+      node.caseNodeList.find(caseNode => getBooleanByNode(caseNode.condition))?.childNode || node.defaultNode
     );
   }
 
@@ -131,9 +132,9 @@ const numberFuncMap = new Map([
 
 /**
  * @param {NumberNode} node
- * @returns {node is ConditionalNode}
+ * @returns {node is SwitchNode}
  */
-const isConditionalNode  = node => node.type === 'conditional';
+const isSwitchNode  = node => node.type === 'switch';
 
 
 

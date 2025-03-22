@@ -32,22 +32,18 @@ export class Screen extends MouseReceiver {
    */
   setVector(vector, mouseVector, scaleRatio) {
     this.#vector = Vector2.add(
-      Vector2.scalarMul(mouseVector, 1-scaleRatio),
-      Vector2.scalarMul(vector, scaleRatio)
+      Vector2.scalarMul(vector, scaleRatio),
+      Vector2.scalarMul(mouseVector, 1-scaleRatio)
     );
 
-    this.#setTransform();
-  }
-
-  get vector() {
-    return this.#vector;
-  }
-
-  #setTransform() {
     this.nodeRoot.style.transform = `
       translate(${this.#vector[X]}px, ${this.#vector[Y]}px)
       scale(${this.scale})
     `;
+  }
+
+  get vector() {
+    return this.#vector;
   }
 
 }
