@@ -5,82 +5,70 @@ const [X, Y] = [0, 1];
 
 
 
-export class Screen extends MouseReceiver {
-  #vector = [0,0];
-  scale = 1;
-  nodeRoot = document.createElement('div');
+let vector = [0,0];
+let scale = 1;
+
+export const nodeRoot = document.createElement('div');
+export const background = document.createElement('div');
+export const mouseReceiver = new MouseReceiver(background);
 
 
-  constructor() {
-    const background = document.createElement('div');
-    super(background);
-    this.background = background;
-    background.classList.add('screen');
-    this.background.appendChild(this.nodeRoot);
 
-    this.nodeRoot.style.transformOrigin = 'top left';
+void (function main() {
+  nodeRoot.style.transformOrigin = 'top left';
+  background.classList.add('screen');
+  background.appendChild(nodeRoot);
 
-    HandlingWheel(this);
-    HandlingMouse(this);
-  }
+  HandlingWheel();
+  HandlingMouse();
+})();
 
 
-  /**
-   * @param {Number[]} vector
-   * @param {Number[]} mouseVector
-   * @param {Number} scaleRatio
-   */
-  setVector(vector, mouseVector, scaleRatio) {
-    this.#vector = Vector2.add(
-      Vector2.scalarMul(vector, scaleRatio),
-      Vector2.scalarMul(mouseVector, 1-scaleRatio)
-    );
 
-    this.nodeRoot.style.transform = `
-      translate(${this.#vector[X]}px, ${this.#vector[Y]}px)
-      scale(${this.scale})
-    `;
-  }
+/**
+ * @param {Number[]} referenceVector
+ * @param {Number[]} mouseVector
+ * @param {Number} scaleRatio
+ */
+function setVector(referenceVector, mouseVector, scaleRatio) {
+  vector = Vector2.add(
+    Vector2.scalarMul(referenceVector, scaleRatio),
+    Vector2.scalarMul(mouseVector, 1-scaleRatio)
+  );
 
-  get vector() {
-    return this.#vector;
-  }
-
+  nodeRoot.style.transform = `
+    translate(${vector[X]}px, ${vector[Y]}px)
+    scale(${scale})
+  `;
 }
 
 
 
-/** @param {Screen} screen */
-function HandlingWheel(screen) {
+function HandlingWheel() {
   const MUL_WHEEL = 0.002, MIN = 0.2, MAX = 1.5;
-  screen.background.addEventListener('wheel', wheel);
+  background.addEventListener('wheel', wheel);
 
 
   /** @param {WheelEvent} e */
   function wheel(e) {
-    const referenceScale = screen.scale;
-    screen.scale = limitedToRange(screen.scale-e.deltaY*MUL_WHEEL, MIN, MAX);
+    const referenceScale = scale;
+    scale = limitedToRange(scale-e.deltaY*MUL_WHEEL, MIN, MAX);
 
-    screen.setVector(
-      screen.vector,
-      [e.clientX, e.clientY],
-      screen.scale / referenceScale
-    );
+    setVector(vector, [e.clientX,e.clientY], scale/referenceScale);
   }
 
 }
 
 
 
-/** @param {Screen} screen */
-function HandlingMouse(screen) {
-  screen.mouseDownMap.set(Symbol(), mousedown);
+function HandlingMouse() {
+  mouseReceiver.down.add(mousedown);
 
 
   /** @param {MouseEvent} e */
   function mousedown(e) {
     if (e.button == 1) {
-      screen.mouseMoveUp(1, MouseWheelMove(Vector2.difference(screen.vector, [e.clientX, e.clientY]), screen.scale));
+      mouseReceiver.moveUp(1, MouseWheelMove(Vector2.difference(vector, [e.clientX, e.clientY]), scale));
     }
   }
 
@@ -90,10 +78,10 @@ function HandlingMouse(screen) {
    */
   function MouseWheelMove(referenceVector, referenceScale) {
     /** @param {MouseEvent} e */
-    return e => screen.setVector(
+    return e => setVector(
       Vector2.difference(referenceVector, [e.clientX, e.clientY]),
       [e.clientX, e.clientY],
-      screen.scale / referenceScale
+      scale / referenceScale
     );
   }
 

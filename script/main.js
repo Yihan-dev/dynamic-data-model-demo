@@ -1,7 +1,7 @@
 // @ts-check
 import * as Node from './structure.js';
-import { Screen } from './screen.js';
-import { calcFunctionNode } from './function.js';
+import * as Screen from './screen.js';
+import calcFunctionNode from './function.js';
 
 
 
@@ -11,18 +11,16 @@ oncontextmenu = e => e.preventDefault();
   const main = document.createElement('main');
   document.body.appendChild(main);
 
-  const screen = new Screen();
-
   const box = document.createElement('div');
   box.classList.add('box');
   box.innerText = '1111';
-  screen.nodeRoot.appendChild(box);
+  Screen.nodeRoot.appendChild(box);
 
   const box2 = document.createElement('div');
   box2.classList.add('box');
-  screen.nodeRoot.appendChild(box2);
+  Screen.nodeRoot.appendChild(box2);
 
-  main.appendChild(screen.background);
+  main.appendChild(Screen.background);
 }
 
 

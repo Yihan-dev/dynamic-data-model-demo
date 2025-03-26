@@ -14,7 +14,7 @@
  * @param {UnitData} subject
  * @param {UnitData} object
  */
-export function calcFunctionNode(functionNode, 상수, 환경변수, 관계, subject, object) {
+export default function calcFunctionNode(functionNode, 상수, 환경변수, 관계, subject, object) {
   const 함수변수 = new Array(functionNode.varLength).fill(0);
   const subjectStateCopy = [...subject.state];
   const objectStateCopy = [...object.state];
@@ -84,9 +84,12 @@ function getNumberByNode(node) {
   }
 
   if (isSwitchNode(node)) {
-    return getNumberByNode(
-      node.caseNodeList.find(caseNode => getBooleanByNode(caseNode.condition))?.childNode || node.defaultNode
-    );
+    for (const caseNode of node.caseNodeList) {
+      if (getBooleanByNode(caseNode.condition)) {
+        return getNumberByNode(caseNode.childNode);
+      }
+    }
+    return getNumberByNode(node.defaultNode);
   }
 
   return NaN;
