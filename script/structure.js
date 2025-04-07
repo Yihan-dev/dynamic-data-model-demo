@@ -19,43 +19,29 @@ export class UnitData {
 
 
 
-export class Function {
+export class Func {
   /**
    * @param {Number} varLength
-   * @param {Assignment[]} assignmentNodeList
+   * @param {NumberNode[]} funcState
+   * @param {Array<NumberNode | null>} subjectState
+   * @param {Array<NumberNode | null>} objectState
    */
   constructor(
     varLength,
-    assignmentNodeList,
+    funcState,
+    subjectState,
+    objectState,
   ) {
     this.varLength = varLength;
-    this.assignmentNodeList = assignmentNodeList;
-  }
-}
-
-export class Assignment {
-  /**
-   * @param {String} operator
-   * @param {Number} objectKey
-   * @param {Number} varKey
-   * @param {NumberNode} numberNode
-   */
-  constructor(
-    operator,
-    objectKey,
-    varKey,
-    numberNode,
-  ) {
-    this.operator = operator;
-    this.objectKey = objectKey;
-    this.varKey = varKey;
-    this.numberNode = numberNode;
+    this.funcState = funcState;
+    this.subjectState = subjectState;
+    this.objectState = objectState;
   }
 }
 
 
 
-/** @typedef {Val | Calc | Func | Switch} NumberNode */
+/** @typedef {Val | Reduce | Calc} NumberNode */
 
 export class Val {
   type = 'val';
@@ -73,8 +59,8 @@ export class Val {
   }
 }
 
-export class Calc {
-  type = 'calc';
+export class Reduce {
+  type = 'reduce';
 
   /**
    * @param {String} operator
@@ -89,8 +75,8 @@ export class Calc {
   }
 }
 
-export class Func {
-  type = 'func';
+export class Calc {
+  type = 'calc';
 
   /**
    * @param {String} func
@@ -101,90 +87,6 @@ export class Func {
     childNode,
   ) {
     this.func = func;
-    this.childNode = childNode;
-  }
-}
-
-export class Switch {
-  type = 'switch';
-
-  /**
-   * @param {Case[]} caseNodeList
-   * @param {NumberNode} defaultNode
-   */
-  constructor(
-    caseNodeList,
-    defaultNode,
-  ) {
-    this.caseNodeList = caseNodeList;
-    this.defaultNode = defaultNode;
-  }
-}
-
-
-
-export class Case {
-  /**
-   * @param {BooleanNode} condition
-   * @param {NumberNode} childNode
-   */
-  constructor(
-    condition,
-    childNode,
-  ) {
-    this.condition = condition;
-    this.childNode = childNode;
-  }
-}
-
-
-
-/** @typedef {Comparison | Logic | Not} BooleanNode */
-
-export class Comparison {
-  type = 'comparison';
-
-  /**
-   * @param {String} comparison
-   * @param {NumberNode} childNodeLeft
-   * @param {NumberNode} childNodeRight
-   */
-  constructor(
-    comparison,
-    childNodeLeft,
-    childNodeRight,
-  ) {
-    this.comparison = comparison;
-    this.childNodeLeft = childNodeLeft;
-    this.childNodeRight = childNodeRight;
-  }
-}
-
-export class Logic {
-  type = 'logic';
-
-  /**
-   * @param {String} operator
-   * @param {Array<BooleanNode>} childNodeList
-   */
-  constructor(
-    operator,
-    childNodeList,
-  ) {
-    this.operator = operator;
-    this.childNodeList = childNodeList;
-  }
-}
-
-export class Not {
-  type = 'not';
-
-  /**
-   * @param {BooleanNode} childNode
-   */
-  constructor(
-    childNode,
-  ) {
     this.childNode = childNode;
   }
 }

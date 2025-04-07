@@ -5,9 +5,7 @@ import calcFunctionNode from './function.js';
 
 
 
-oncontextmenu = e => e.preventDefault();
-
-{
+void (function main() {
   const main = document.createElement('main');
   document.body.appendChild(main);
 
@@ -21,7 +19,9 @@ oncontextmenu = e => e.preventDefault();
   Screen.nodeRoot.appendChild(box2);
 
   main.appendChild(Screen.background);
-}
+
+  oncontextmenu = e => e.preventDefault();
+})();
 
 
 
@@ -39,12 +39,12 @@ const parameter = {
     organization : 7,
     terrain : 8,
   },
-  함수변수 : 9
+  funcState : 9
 }
 const state = {
   subject : 0,
   object : 1,
-  함수변수 : 2
+  func : 2
 }
 
 
@@ -54,14 +54,20 @@ const state = {
   const 환경변수 = [];
   const 관계 = [];
 
-  console.log(calcFunctionNode(
-    new Node.Function(0, [
-      new Node.Assignment('/=', state.subject, 0,
-        new Node.Val(parameter.상수, 0)
-      )
+  console.log(...calcFunctionNode(
+    new Node.Func(0, [
+
+    ], [
+      null,
+      new Node.Reduce('*', [
+        new Node.Val(parameter.subject.state, 1),
+        new Node.Calc('inverse', new Node.Val(parameter.상수, 0))
+      ])
+    ], [
+
     ]),
-    상수, 환경변수, 관계, new Node.UnitData([1], [], []), new Node.UnitData([], [], [])
-  )[0][0]);
+    상수, 환경변수, 관계, new Node.UnitData([10, 1], [], []), new Node.UnitData([], [], [])
+  )[0]);
 }
 
 {
@@ -69,62 +75,24 @@ const state = {
   const 환경변수 = [];
   const 관계 = [];
 
-  console.log(calcFunctionNode(
-    new Node.Function(0, [
-      new Node.Assignment('=', state.subject, 0,
-        new Node.Calc('+', [
-          new Node.Calc('*', [
-            new Node.Val(parameter.상수, 0),
-            new Node.Func('inverse', new Node.Val(parameter.상수, 1))
-          ]),
-          new Node.Val(parameter.상수, 2),
-          new Node.Func('negativ', new Node.Val(parameter.상수, 3))
-        ])
-      )
+  console.log(...calcFunctionNode(
+    new Node.Func(0, [
+
+    ], [
+      new Node.Reduce('+', [
+        new Node.Reduce('*', [
+          new Node.Val(parameter.상수, 0),
+          new Node.Calc('inverse', new Node.Val(parameter.상수, 1))
+        ]),
+        new Node.Val(parameter.상수, 2),
+        new Node.Calc('negativ', new Node.Val(parameter.상수, 3))
+      ])
+    ], [
+
     ]),
     상수, 환경변수, 관계, new Node.UnitData([], [], []), new Node.UnitData([], [], [])
-  )[0][0]);
+  )[0]);
 }
-
-{
-  const 상수 = [0, 1, 10];
-  const 환경변수 = [1, 2, 3];
-  const 관계 = [];
-
-  console.log(calcFunctionNode(
-    new Node.Function(0, [
-      new Node.Assignment('=', state.subject, 0,
-        new Node.Switch(
-          [
-            new Node.Case(
-              new Node.Comparison('==',
-                new Node.Val(parameter.환경변수, 1),
-                new Node.Val(parameter.상수, 2)
-              ),
-              new Node.Val(parameter.상수, 1),
-            ),
-            new Node.Case(
-              new Node.Not(new Node.Logic('and', [
-                new Node.Comparison('<',
-                  new Node.Val(parameter.환경변수, 0),
-                  new Node.Val(parameter.환경변수, 1)
-                ),
-                new Node.Comparison('<',
-                  new Node.Val(parameter.환경변수, 1),
-                  new Node.Val(parameter.환경변수, 2)
-                ),
-              ])),
-              new Node.Val(parameter.상수, 0),
-            )
-          ],
-          new Node.Val(parameter.상수, 1)
-        )
-      )
-    ]),
-    상수, 환경변수, 관계, new Node.UnitData([], [], []), new Node.UnitData([], [], [])
-  )[0][0]);
-}
-
 
 
 /** 맥락 Number[][]

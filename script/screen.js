@@ -75,9 +75,9 @@ function HandlingMouse() {
   /**
    * @param {number[]} referenceVector
    * @param {number} referenceScale
+   * @returns {(e: MouseEvent) => void}
    */
   function MouseWheelMove(referenceVector, referenceScale) {
-    /** @param {MouseEvent} e */
     return e => setVector(
       Vector2.difference(referenceVector, [e.clientX, e.clientY]),
       [e.clientX, e.clientY],
