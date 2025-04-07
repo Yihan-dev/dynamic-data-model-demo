@@ -70,7 +70,7 @@ function getNumberByNode(node) {
   if (isReduceNode(node)) {
     const reducer = numberReducerMap.get(node.operator);
     if (reducer !== undefined) {
-      return node.childNodeList.map(getNumberByNode).reduce(reducer);
+      return reducer(node.childNodeList.map(getNumberByNode));
     }
   }
 
@@ -100,10 +100,12 @@ const isValNode = node => node.type === 'val';
  */
 const isReduceNode = node => node.type === 'reduce';
 
-/** @type {Map<String, (acc: Number, val: Number) => Number>} */
+/** @type {Map<String, (values: Number[]) => Number>} */
 const numberReducerMap = new Map([
-  ['+', (acc, val) => acc + val],
-  ['*', (acc, val) => acc * val],
+  ['add', values => values.reduce((acc, val) => acc + val)],
+  ['mul', values => values.reduce((acc, val) => acc * val)],
+  ['min', values => Math.min(...values)],
+  ['max', values => Math.max(...values)],
 ]);
 
 

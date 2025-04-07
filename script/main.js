@@ -59,7 +59,7 @@ const state = {
 
     ], [
       null,
-      new Node.Reduce('*', [
+      new Node.Reduce('mul', [
         new Node.Val(parameter.subject.state, 1),
         new Node.Calc('inverse', new Node.Val(parameter.상수, 0))
       ])
@@ -79,8 +79,8 @@ const state = {
     new Node.Func(0, [
 
     ], [
-      new Node.Reduce('+', [
-        new Node.Reduce('*', [
+      new Node.Reduce('add', [
+        new Node.Reduce('mul', [
           new Node.Val(parameter.상수, 0),
           new Node.Calc('inverse', new Node.Val(parameter.상수, 1))
         ]),
@@ -94,6 +94,25 @@ const state = {
   )[0]);
 }
 
+{
+  const 상수 = [0, -1];
+  const 환경변수 = [];
+  const 관계 = [];
+
+  console.log(...calcFunctionNode(
+    new Node.Func(0, [
+
+    ], [
+      new Node.Reduce('max', [
+        new Node.Val(parameter.상수, 0),
+        new Node.Val(parameter.상수, 1),
+      ])
+    ], [
+
+    ]),
+    상수, 환경변수, 관계, new Node.UnitData([], [], []), new Node.UnitData([], [], [])
+  )[0]);
+}
 
 /** 맥락 Number[][]
  * 상수
